@@ -16,7 +16,10 @@
 <body>
 
 <div class="container">
-    <h1>Skateboard Shop</h1>
+    <h1>CJ's Skateboard Shop</h1>
+    <div class="container">
+        <a class="btn btn-primary mt-3" th:href="@{/about}">Learn More About Us</a>
+    </div>
     <hr>
     <h2>Board Parts</h2>
     <form th:action="@{/mainscreen}">
@@ -86,6 +89,10 @@
         </tr>
         </tbody>
     </table>
+
+    <footer class="mt-5 mb-3">
+        <p>&copy; 2024 CJ's Skateboard Shop. All rights reserved.</p>
+    </footer>
 </div>
 </body>
 </html>
