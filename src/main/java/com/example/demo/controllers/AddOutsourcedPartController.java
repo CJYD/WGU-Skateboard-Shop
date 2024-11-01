@@ -31,26 +31,36 @@ public class AddOutsourcedPartController {
     private ApplicationContext context;
 
     @GetMapping("/showFormAddOutPart")
-    public String showFormAddOutsourcedPart(Model theModel){
-        Part part=new OutsourcedPart();
-        theModel.addAttribute("outsourcedpart",part);
+    public String showFormAddOutsourcedPart(Model theModel) {
+        Part part = new OutsourcedPart();
+        theModel.addAttribute("outsourcedpart", part);
         return "OutsourcedPartForm";
     }
 
     @PostMapping("/showFormAddOutPart")
-    public String submitForm(@Valid @ModelAttribute("outsourcedpart") OutsourcedPart part, BindingResult bindingResult, Model theModel){
-        theModel.addAttribute("outsourcedpart",part);
-        if(bindingResult.hasErrors()){
+    public String submitForm(@Valid @ModelAttribute("outsourcedpart") OutsourcedPart part, BindingResult bindingResult, Model theModel) {
+        theModel.addAttribute("outsourcedpart", part);
+        if (bindingResult.hasErrors()) {
             return "OutsourcedPartForm";
+        } else {
+            OutsourcedPartService repo = context.getBean(OutsourcedPartServiceImpl.class);
+            OutsourcedPart op = repo.findAll().stream().filter(existing -> existing.getName().equals(part.getName()))
+                    .findFirst().orElse(null);
+
+            if (op != null && op.getName().equals(part.getName())) {
+                OutsourcedPart multiPackPart = new OutsourcedPart();
+                multiPackPart.setName(op.getName() + " multi-pack");
+                multiPackPart.setPrice(op.getPrice() * part.getInv());
+                multiPackPart.setInv(part.getInv());
+                multiPackPart.setCompanyName(op.getCompanyName());
+
+                repo.save(multiPackPart);
+                return "confirmationaddpart";
+            } else {
+                if (op != null) part.setProducts(op.getProducts());
+                repo.save(part);
+                return "confirmationaddpart";
+            }
         }
-        else{
-        OutsourcedPartService repo=context.getBean(OutsourcedPartServiceImpl.class);
-        OutsourcedPart op=repo.findById((int)part.getId());
-        if(op!=null)part.setProducts(op.getProducts());
-            repo.save(part);
-        return "confirmationaddpart";}
     }
-
-
-
 }

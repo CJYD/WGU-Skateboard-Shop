@@ -1,5 +1,6 @@
 package com.example.demo.bootstrap;
 
+import com.example.demo.domain.InhousePart;
 import com.example.demo.domain.OutsourcedPart;
 import com.example.demo.domain.Part;
 import com.example.demo.domain.Product;
@@ -13,8 +14,10 @@ import com.example.demo.service.ProductServiceImpl;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  *
@@ -39,39 +42,66 @@ public class BootStrapData implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-       /*
-        OutsourcedPart o= new OutsourcedPart();
-        o.setCompanyName("Western Governors University");
-        o.setName("out test");
-        o.setInv(5);
-        o.setPrice(20.0);
-        o.setId(100L);
-        outsourcedPartRepository.save(o);
-        OutsourcedPart thePart=null;
-        List<OutsourcedPart> outsourcedParts=(List<OutsourcedPart>) outsourcedPartRepository.findAll();
-        for(OutsourcedPart part:outsourcedParts){
-            if(part.getName().equals("out test"))thePart=part;
-        }
-
-        System.out.println(thePart.getCompanyName());
-        */
         List<OutsourcedPart> outsourcedParts=(List<OutsourcedPart>) outsourcedPartRepository.findAll();
         for(OutsourcedPart part:outsourcedParts){
             System.out.println(part.getName()+" "+part.getCompanyName());
         }
 
-        /*
-        Product bicycle= new Product("bicycle",100.0,15);
-        Product unicycle= new Product("unicycle",100.0,15);
-        productRepository.save(bicycle);
-        productRepository.save(unicycle);
-        */
+        if (productRepository.count() == 0) {
+            Product cruiser= new Product(1,"Cruiser SB",60.99,13);
+            Product miniCruiser= new Product(2,"Mini Cruiser SB",40.99,16);
+            Product doubleKick= new Product(3,"Double Kick SB",70.99,14);
+            Product carver= new Product(4,"Carver SB",65.99,18);
+            Product cruiserLB= new Product(5,"Cruiser LB",95.99,6);
+
+            productRepository.save(cruiser);
+            productRepository.save(miniCruiser);
+            productRepository.save(doubleKick);
+            productRepository.save(carver);
+            productRepository.save(cruiserLB);
+        }
+
+        if (partRepository.count() == 0) {
+            InhousePart trucks = new InhousePart();
+            trucks.setPartId(1);
+            trucks.setName("Trucks");
+            trucks.setPrice(20.99);
+            trucks.setInv(40);
+            partRepository.save(trucks);
+
+            InhousePart wheels = new InhousePart();
+            wheels.setPartId(2);
+            wheels.setName("Wheels");
+            wheels.setPrice(30.99);
+            wheels.setInv(20);
+            partRepository.save(wheels);
+
+            InhousePart gripTape = new InhousePart();
+            gripTape.setPartId(3);
+            gripTape.setName("Grip Tape");
+            gripTape.setPrice(15.99);
+            gripTape.setInv(10);
+            partRepository.save(gripTape);
+
+            InhousePart deck = new InhousePart();
+            deck.setPartId(4);
+            deck.setName("Deck");
+            deck.setPrice(40.99);
+            deck.setInv(20);
+            partRepository.save(deck);
+
+            InhousePart hardware = new InhousePart();
+            hardware.setPartId(5);
+            hardware.setName("Hardware");
+            hardware.setPrice(5.99);
+            hardware.setInv(50);
+            partRepository.save(hardware);
+        }
 
         System.out.println("Started in Bootstrap");
         System.out.println("Number of Products"+productRepository.count());
         System.out.println(productRepository.findAll());
         System.out.println("Number of Parts"+partRepository.count());
         System.out.println(partRepository.findAll());
-
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -74,9 +75,24 @@ public class AddProductController {
 //        product.getParts().addAll(assparts);
         else {
             ProductService repo = context.getBean(ProductServiceImpl.class);
+            PartService partService1 = context.getBean(PartServiceImpl.class);
+            Product existingProduct = repo.findAll().stream().filter(existing->existing.getName().equals(product.getName()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (existingProduct != null) {
+                Product multiPackProduct = new Product();
+                multiPackProduct.setName(product.getName() + " mulit-pack");
+                multiPackProduct.setPrice(existingProduct.getPrice() * product.getInv());
+                multiPackProduct.setInv(product.getInv());
+
+                multiPackProduct.setParts(new HashSet<>(existingProduct.getParts()));
+
+                repo.save(multiPackProduct);
+                return "confirmationaddproduct";
+            }
             if(product.getId()!=0) {
                 Product product2 = repo.findById((int) product.getId());
-                PartService partService1 = context.getBean(PartServiceImpl.class);
                 if(product.getInv()- product2.getInv()>0) {
                     for (Part p : product2.getParts()) {
                         int inv = p.getInv();

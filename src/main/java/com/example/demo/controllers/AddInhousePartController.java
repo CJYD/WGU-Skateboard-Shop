@@ -37,18 +37,31 @@ public class AddInhousePartController{
     }
 
     @PostMapping("/showFormAddInPart")
-    public String submitForm(@Valid @ModelAttribute("inhousepart") InhousePart part, BindingResult theBindingResult, Model theModel){
-        theModel.addAttribute("inhousepart",part);
-        if(theBindingResult.hasErrors()){
+    public String submitForm(@Valid @ModelAttribute("inhousepart") InhousePart part, BindingResult theBindingResult, Model theModel) {
+        theModel.addAttribute("inhousepart", part);
+        if (theBindingResult.hasErrors()) {
             return "InhousePartForm";
-        }
-        else{
-        InhousePartService repo=context.getBean(InhousePartServiceImpl.class);
-        InhousePart ip=repo.findById((int)part.getId());
-        if(ip!=null)part.setProducts(ip.getProducts());
-            repo.save(part);
+        } else {
+            InhousePartService repo = context.getBean(InhousePartServiceImpl.class);
+            InhousePart ip = repo.findAll().stream().filter(existing->existing.getName().equals(part.getName()))
+                    .findFirst().orElse(null);
 
-        return "confirmationaddpart";}
+            if (ip != null && ip.getName().equals(part.getName())) {
+                InhousePart multiPackPart = new InhousePart();
+                multiPackPart.setName(ip.getName() + " multi-pack");
+                multiPackPart.setPrice(ip.getPrice() * part.getInv());
+                multiPackPart.setInv(part.getInv());
+                multiPackPart.setPartId(ip.getPartId());
+
+                repo.save(multiPackPart);
+                return "confirmationaddpart";
+            } else {
+                if (ip != null) part.setProducts(ip.getProducts());
+                repo.save(part);
+
+                return "confirmationaddpart";
+            }
+        }
     }
 
 }
