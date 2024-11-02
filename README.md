@@ -559,3 +559,6 @@ Changed file: PartTest lines 104 - 138. Added the min and max test and successfu
             }
 
 ## J.  Remove the class files for any unused validators in order to clean your code.
+
+Deleted files: DeletePartValidator and ValidDeletePart. These are the only two files I did not come across while working on this program.
+PriceProductValidator and ValidProductPrice allow for a positive number in the price field.
