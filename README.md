@@ -359,7 +359,123 @@ Changed file: AddProductController lines 196 - 209. This added the buyNow method
 •  Modify the sample inventory to include the maximum and minimum fields.
 •  Add to the InhousePartForm and OutsourcedPartForm forms additional text inputs for the inventory so the user can set the maximum and minimum values.
 •  Rename the file the persistent storage is saved to.
-•  Modify the code to enforce that the inventory is between or at the minimum and maximum value.
+•  Modify the code to enforce that the inventory is between or at the minimum and maximum value. 
+
+Create file: @ValidInventoryRange lines 1 - 16. This ensures that minInv and maxInv are withing the range.
+        
+        package com.example.demo.validators;
+        
+        import javax.validation.Constraint;
+        import javax.validation.Payload;
+        import java.lang.annotation.*;
+        
+        @Documented
+        @Constraint(validatedBy = InventoryRangeValidator.class)
+        @Target({ElementType.TYPE})
+        @Retention(RetentionPolicy.RUNTIME)
+        public @interface ValidInventoryRange {
+        String message() default "Inventory must be between minimum and maximum values";
+        Class<?>[] groups() default {};
+        Class<? extends Payload>[] payload() default {};
+        }
+
+Create file: InventoryRangeValidator.java lines 1 - 17. This check whether the minInv or maxInv is following the sample data constraints in the BootStrapData.java class.
+Also this is where the @ValidInventoryRange gets enforced.
+
+        package com.example.demo.validators;
+        
+        import com.example.demo.domain.Part;
+        import javax.validation.ConstraintValidator;
+        import javax.validation.ConstraintValidatorContext;
+        
+        public class InventoryRangeValidator implements ConstraintValidator<ValidInventoryRange, Part> {
+
+        @Override
+        public boolean isValid(Part part, ConstraintValidatorContext context) {
+            if (part.getInv() < part.getMinInv() || part.getInv() > part.getMaxInv()) {
+                return false;
+            }
+            else {
+                return true;
+
+Change file: Part.java lines 4, 21, 33 - 37, 50 - 51, 59 - 60, 87 - 107. To start you need to import the ValidInventoryRange. Import the ValidInventoryRange annotation as well.
+Next convert all the primitive int values to Integer for to allow the field to be set to null if necessary, this helps avoid any unknown errors. The @Min and @Max annotations ensure that the inventory values fall within the specified range.
+Then the adjusted constructors to account for the new minInv and maxInv variables to initialize the variables. The new Getter/Setter methods are also adjusted with the new Integer types and with the new min and max variables.
+
+        import com.example.demo.validators.ValidInventoryRange;
+
+        @ValidInventoryRange
+
+        private Integer inv;
+        @Min(value = 0, message = "Inventory value must be positive")
+        private Integer minInv;
+        private Integer maxInv;
+
+        this.minInv = minInv;
+        this.maxInv = maxInv;
+        this.minInv = minInv;
+        this.maxInv = maxInv;
+
+        public Integer getInv() {
+        return inv;
+        }
+        
+        public void setInv(Integer inv) {
+        this.inv = inv;
+        }
+        
+        public Integer getMinInv() {
+        return minInv;
+        }
+        
+        public void setMinInv(Integer minInv) {
+        this.minInv = minInv;
+        }
+
+        public Integer getMaxInv() {
+        return maxInv;
+        }
+        
+        public void setMaxInv(Integer maxInv) {
+        this.maxInv = maxInv;
+        }
+
+Change file: BootStrapData.java lines 70 - 71, 79 - 80, 88 - 89, 97 - 98, 106 - 107. This modifies the sample inventory and includes the maximum and minimum fields of each product.
+
+        trucks.setMinInv(1);
+        trucks.setMaxInv(100);
+        
+        wheels.setMinInv(1);
+        wheels.setMaxInv(100);
+
+        gripTape.setMinInv(1);
+        gripTape.setMaxInv(100);
+
+        deck.setMinInv(1);
+        deck.setMaxInv(100);
+
+        hardware.setMinInv(1);
+        hardware.setMaxInv(100);
+
+Changed file: InhousePartForm lines 28 - 33. Added the additional text input boxes so that the user can set minimum or maximum values.
+
+        <p><input type="text" th:field="*{minInv}" placeholder="Minimum Inventory" class="form-control mb-4 col-4"/></p>
+        <p th:if="${#fields.hasErrors('minInv')}" th:errors="*{minInv}">Minimum Inventory Error</p>
+    
+        <p><input type="text" th:field="*{maxInv}" placeholder="Maximum Inventory" class="form-control mb-4 col-4"/></p>
+        <p th:if="${#fields.hasErrors('maxInv')}" th:errors="*{maxInv}">Maximum Inventory Error</p>
+
+Changed file: OutsourcedPartForm lines 28 - 33. Added the additional text input boxes so that the user can set minimum or maximum values.
+
+        <p><input type="text" th:field="*{minInv}" placeholder="Minimum Inventory" class="form-control mb-4 col-4"/></p>
+        <p th:if="${#fields.hasErrors('minInv')}" th:errors="*{minInv}">Minimum Inventory Error</p>
+
+        <p><input type="text" th:field="*{maxInv}" placeholder="Maximum Inventory" class="form-control mb-4 col-4"/></p>
+        <p th:if="${#fields.hasErrors('maxInv')}" th:errors="*{maxInv}">Maximum Inventory Error</p>
+
+Changed file: application.properties lines 6. Changed the URL from spring-boot-h2-db102 to cjs-skateboard-shop.
+
+        spring.datasource.url=jdbc:h2:file:~/cjs-skateboard-shop
 
 
 ## H.  Add validation for between or at the maximum and minimum fields. The validation must include the following:

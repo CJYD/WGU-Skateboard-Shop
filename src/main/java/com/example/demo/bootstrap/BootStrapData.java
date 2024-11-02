@@ -67,6 +67,8 @@ public class BootStrapData implements CommandLineRunner {
             trucks.setName("Trucks");
             trucks.setPrice(20.99);
             trucks.setInv(40);
+            trucks.setMinInv(1);
+            trucks.setMaxInv(100);
             partRepository.save(trucks);
 
             InhousePart wheels = new InhousePart();
@@ -74,6 +76,8 @@ public class BootStrapData implements CommandLineRunner {
             wheels.setName("Wheels");
             wheels.setPrice(30.99);
             wheels.setInv(20);
+            wheels.setMinInv(1);
+            wheels.setMaxInv(100);
             partRepository.save(wheels);
 
             InhousePart gripTape = new InhousePart();
@@ -81,6 +85,8 @@ public class BootStrapData implements CommandLineRunner {
             gripTape.setName("Grip Tape");
             gripTape.setPrice(15.99);
             gripTape.setInv(10);
+            gripTape.setMinInv(1);
+            gripTape.setMaxInv(100);
             partRepository.save(gripTape);
 
             InhousePart deck = new InhousePart();
@@ -88,6 +94,8 @@ public class BootStrapData implements CommandLineRunner {
             deck.setName("Deck");
             deck.setPrice(40.99);
             deck.setInv(20);
+            deck.setMinInv(1);
+            deck.setMaxInv(100);
             partRepository.save(deck);
 
             InhousePart hardware = new InhousePart();
@@ -95,6 +103,8 @@ public class BootStrapData implements CommandLineRunner {
             hardware.setName("Hardware");
             hardware.setPrice(5.99);
             hardware.setInv(50);
+            hardware.setMinInv(1);
+            hardware.setMaxInv(100);
             partRepository.save(hardware);
         }
 
