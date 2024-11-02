@@ -483,6 +483,40 @@ Changed file: application.properties lines 6. Changed the URL from spring-boot-h
 •  Display error messages for low inventory when adding and updating products lowers the part inventory below the minimum.
 •  Display error messages when adding and updating parts if the inventory is greater than the maximum.
 
+Changed file: InventoryRangeValidator lines 9 - 18 were commented out to allow the new validator to work. Lines 19 - 38 are the new validation messages.
+These display error messages if the user does not input inventory correctly.
+
+        /* @Override
+        public boolean isValid(Part part, ConstraintValidatorContext context) {
+        if (part.getInv() < part.getMinInv() || part.getInv() > part.getMaxInv()) {
+        return false;
+        }
+        else {
+        return true;
+        }
+        }
+        */
+
+        @Override
+        public boolean isValid(Part part, ConstraintValidatorContext context ) {
+        boolean isValid = true;
+
+        if (part.getInv() < part.getMinInv()) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Inventory cannot be lower than the minimum inventory.")
+                    .addPropertyNode("inv")
+                    .addConstraintViolation();
+            isValid = false;
+        }
+        if (part.getInv() > part.getMaxInv()) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Inventory cannot be higher than the maximum inventory.")
+                    .addPropertyNode("inv")
+                    .addConstraintViolation();
+            isValid = false;
+        }
+        return isValid;
+        }
 
 ## I.  Add at least two unit tests for the maximum and minimum fields to the PartTest class in the test package.
 
