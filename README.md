@@ -5,7 +5,7 @@
 ## C.  Customize the HTML user interface for your customer’s application. The user interface should include the shop name, the product names, and the names of the parts.
 Note: Do not remove any elements that were included in the screen. You may add any additional elements you would like or any images, colors, and styles, although it is not required.
 
-In file: mainscreen.html lines 14, 19, 21, 53 customized the user interface to match my Skateboard shop website.
+Changed file: mainscreen.html lines 14, 19, 21, 53 customized the user interface to match my Skateboard shop website.
 Added a footer in lines 93 - 95 to match the about.html file.
 In section E the sample parts and products will be added.
 
@@ -18,7 +18,7 @@ Created file: AboutController in the controllers folder. Lines 1 - 15 create the
         public String showAboutPage() {
         return "about";
 
-Create file: about.html in the templates folder. Lines 1 - 47 create the about.html page. Added a button underneath the shop title in the about.html file to link back to the mainscreen.html file.
+Created file: about.html in the templates folder. Lines 1 - 47 create the about.html page. Added a button underneath the shop title in the about.html file to link back to the mainscreen.html file.
 
         <body>
         <div class="container">
@@ -520,5 +520,42 @@ These display error messages if the user does not input inventory correctly.
 
 ## I.  Add at least two unit tests for the maximum and minimum fields to the PartTest class in the test package.
 
+Changed file: PartTest lines 104 - 138. Added the min and max test and successfully ran the test.
+
+        @Test
+        void getminInv() {
+        Integer minInv=5;
+        partIn.setMinInv(minInv);
+        assertEquals(minInv,partIn.getMinInv());
+        partOut.setMinInv(minInv);
+        assertEquals(minInv,partOut.getMinInv());
+        }
+        
+            @Test
+            void setminInv() {
+                Integer minInv=5;
+                partIn.setMinInv(minInv);
+                assertEquals(minInv,partIn.getMinInv());
+                partOut.setMinInv(minInv);
+                assertEquals(minInv,partOut.getMinInv());
+            }
+        
+            @Test
+            void getmaxInv() {
+                Integer maxInv=5;
+                partIn.setMaxInv(maxInv);
+                assertEquals(maxInv,partIn.getMaxInv());
+                partOut.setMaxInv(maxInv);
+                assertEquals(maxInv,partOut.getMaxInv());
+            }
+        
+            @Test
+            void setmaxInv() {
+                Integer maxInv=5;
+                partIn.setMaxInv(maxInv);
+                assertEquals(maxInv,partIn.getMaxInv());
+                partOut.setMaxInv(maxInv);
+                assertEquals(maxInv,partOut.getMaxInv());
+            }
 
 ## J.  Remove the class files for any unused validators in order to clean your code.
