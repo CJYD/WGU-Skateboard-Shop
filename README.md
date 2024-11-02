@@ -5,10 +5,17 @@
 ## C.  Customize the HTML user interface for your customer’s application. The user interface should include the shop name, the product names, and the names of the parts.
 Note: Do not remove any elements that were included in the screen. You may add any additional elements you would like or any images, colors, and styles, although it is not required.
 
-Changed file: mainscreen.html lines 14, 19, 21, 53 customized the user interface to match my Skateboard shop website.
-Added a footer in lines 93 - 95 to match the about.html file.
+Changed file: mainscreen.html lines 14, 19, 24, 56 customized the user interface to match my Skateboard shop website.
+Added a footer in lines 94 - 96 to match the about.html file.
 In section E the sample parts and products will be added.
 
+        <title>CJ's Skateboard Shop</title>
+        <h1>CJ's Skateboard Shop</h1>
+        <h2>Board Parts</h2>
+        <h2>Board Products</h2>
+        <footer class="mt-5 mb-3">
+        <p>&copy; 2024 CJ's Skateboard Shop. All rights reserved.</p>
+         </footer>
 
 ## D.  Add an “About” page to the application to describe your chosen customer’s company to web viewers and include navigation to and from the “About” page and the main screen.
 
@@ -57,7 +64,7 @@ Created file: about.html in the templates folder. Lines 1 - 47 create the about.
         
         </body>
         
-Change file: mainscreen.html. Lines 20 - 22 added a button underneath the shops title to create a link to the about.html file from the mainscreen.html file .
+Changed file: mainscreen.html. Lines 20 - 22 added a button underneath the shops title to create a link to the about.html file from the mainscreen.html file .
         
         <div class="container">
                 <a class="btn btn-primary mt-3" th:href="@{/about}">Learn More About Us</a>
@@ -68,7 +75,7 @@ Change file: mainscreen.html. Lines 20 - 22 added a button underneath the shops 
 
 Note: Make sure the sample inventory is added only when both the part and product lists are empty. When adding the sample inventory appropriate for the store, the inventory is stored in a set so duplicate items cannot be added to your products. When duplicate items are added, make a “multi-pack” part.
 
-Change file: BootStrapData.java. Lines 42 - 99 added the products and parts to the database. I used an if statement with count() == 0 as a conditional check to see if any previous parts were loaded to the database.
+Changed file: BootStrapData.java. Lines 42 - 99 added the products and parts to the database. I used an if statement with count() == 0 as a conditional check to see if any previous parts were loaded to the database.
 If no products or parts have been loaded it will automatically load in the productRepository and the partRepository.
 
         List<OutsourcedPart> outsourcedParts=(List<OutsourcedPart>) outsourcedPartRepository.findAll();
@@ -133,7 +140,7 @@ If no products or parts have been loaded it will automatically load in the produ
         System.out.println("Number of Parts"+partRepository.count());
         System.out.println(partRepository.findAll());
 
-Change file: AddProductController lines 18,  52 - 112. This controller now handles checking if the same product name exist and if so creating a "multi-pack" product with the modified name.
+Changed file: AddProductController lines 18,  52 - 112. This controller now handles checking if the same product name exist and if so creating a "multi-pack" product with the modified name.
 Added to the method conditional checks to properly add a product or to properly update a product.
 
         import java.util.HashSet;
@@ -200,7 +207,7 @@ Added to the method conditional checks to properly add a product or to properly 
                 return "confirmationaddproduct";
             }
 
-Change file: InhousePartController lines 41 - 67. The InhousePartController handles checking if the same in-house part name exist and if so creating a "multi-pack" part with the modified name.
+Changed file: InhousePartController lines 41 - 67. The InhousePartController handles checking if the same in-house part name exist and if so creating a "multi-pack" part with the modified name.
 
         @PostMapping("/showFormAddInPart")
         public String submitForm(@Valid @ModelAttribute("inhousepart") InhousePart part, BindingResult theBindingResult, Model theModel) {
@@ -229,7 +236,7 @@ Change file: InhousePartController lines 41 - 67. The InhousePartController hand
             }
         }
 
-Change file: OutsourcedPartController lines 40 - 65. The OutsourcedPartController handles checking if the same outsourced part name exist and if so creating a "multi-pack" part with the modified name.
+Changed file: OutsourcedPartController lines 40 - 65. The OutsourcedPartController handles checking if the same outsourced part name exist and if so creating a "multi-pack" part with the modified name.
 
         @PostMapping("/showFormAddOutPart")
         public String submitForm(@Valid @ModelAttribute("outsourcedpart") OutsourcedPart part, BindingResult bindingResult, Model theModel) {
@@ -257,7 +264,7 @@ Change file: OutsourcedPartController lines 40 - 65. The OutsourcedPartControlle
             }
         }
 
-Change file: InhousePartForm lines 7 - 11, 35 - 36. Updated CSS to match throughout.
+Changed file: InhousePartForm lines 7 - 11, 35 - 36. Updated CSS to match throughout.
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
         link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -265,7 +272,7 @@ Change file: InhousePartForm lines 7 - 11, 35 - 36. Updated CSS to match through
         <a href="http://localhost:8080/" class="btn btn-primary btn-sm mb-3">Link
         to Main Screen</a>
 
-Change file: OutsourcedPartForm lines 7 - 11, 34 - 35. Updated CSS to match throughout.
+Changed file: OutsourcedPartForm lines 7 - 11, 34 - 35. Updated CSS to match throughout.
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
         link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -273,7 +280,7 @@ Change file: OutsourcedPartForm lines 7 - 11, 34 - 35. Updated CSS to match thro
         <a href="http://localhost:8080/" class="btn btn-primary btn-sm mb-3">Link
         to Main Screen</a>
 
-Change file: productForm lines 8 - 9, 77. Updated CSS to match throughout.
+Changed file: productForm lines 8 - 9, 77. Updated CSS to match throughout.
 
         link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"
@@ -361,7 +368,7 @@ Changed file: AddProductController lines 196 - 209. This added the buyNow method
 •  Rename the file the persistent storage is saved to.
 •  Modify the code to enforce that the inventory is between or at the minimum and maximum value. 
 
-Create file: @ValidInventoryRange lines 1 - 16. This ensures that minInv and maxInv are withing the range.
+Created file: @ValidInventoryRange lines 1 - 16. This ensures that minInv and maxInv are withing the range.
         
         package com.example.demo.validators;
         
@@ -379,7 +386,7 @@ Create file: @ValidInventoryRange lines 1 - 16. This ensures that minInv and max
         Class<? extends Payload>[] payload() default {};
         }
 
-Create file: InventoryRangeValidator.java lines 1 - 17. This check whether the minInv or maxInv is following the sample data constraints in the BootStrapData.java class.
+Created file: InventoryRangeValidator.java lines 1 - 17. This check whether the minInv or maxInv is following the sample data constraints in the BootStrapData.java class.
 Also this is where the @ValidInventoryRange gets enforced.
 
         package com.example.demo.validators;
@@ -398,7 +405,7 @@ Also this is where the @ValidInventoryRange gets enforced.
             else {
                 return true;
 
-Change file: Part.java lines 4, 21, 33 - 37, 50 - 51, 59 - 60, 87 - 107. To start you need to import the ValidInventoryRange. Import the ValidInventoryRange annotation as well.
+Changed file: Part.java lines 4, 21, 33 - 37, 50 - 51, 59 - 60, 87 - 107. To start you need to import the ValidInventoryRange. Import the ValidInventoryRange annotation as well.
 Next convert all the primitive int values to Integer for to allow the field to be set to null if necessary, this helps avoid any unknown errors. The @Min and @Max annotations ensure that the inventory values fall within the specified range.
 Then the adjusted constructors to account for the new minInv and maxInv variables to initialize the variables. The new Getter/Setter methods are also adjusted with the new Integer types and with the new min and max variables.
 
@@ -440,7 +447,7 @@ Then the adjusted constructors to account for the new minInv and maxInv variable
         this.maxInv = maxInv;
         }
 
-Change file: BootStrapData.java lines 70 - 71, 79 - 80, 88 - 89, 97 - 98, 106 - 107. This modifies the sample inventory and includes the maximum and minimum fields of each product.
+Changed file: BootStrapData.java lines 70 - 71, 79 - 80, 88 - 89, 97 - 98, 106 - 107. This modifies the sample inventory and includes the maximum and minimum fields of each product.
 
         trucks.setMinInv(1);
         trucks.setMaxInv(100);
