@@ -133,26 +133,70 @@ If no products or parts have been loaded it will automatically load in the produ
         System.out.println("Number of Parts"+partRepository.count());
         System.out.println(partRepository.findAll());
 
-Change file: AddProductController lines 18,  76 - 93. This controller now handles checking if the same product name exist and if so creating a "multi-pack" product with the modified name.
+Change file: AddProductController lines 18,  52 - 112. This controller now handles checking if the same product name exist and if so creating a "multi-pack" product with the modified name.
+Added to the method conditional checks to properly add a product or to properly update a product.
 
         import java.util.HashSet;
 
+            @PostMapping("/showFormAddProduct")
+        public String submitForm(@Valid @ModelAttribute("product") Product product, BindingResult bindingResult, Model theModel) {
+        theModel.addAttribute("product", product);
+
+        if(bindingResult.hasErrors()){
+            ProductService productService = context.getBean(ProductServiceImpl.class);
+            Product product2 = new Product();
+            try {
+                product2 = productService.findById((int) product.getId());
+            } catch (Exception e) {
+                System.out.println("Error Message " + e.getMessage());
+            }
+            theModel.addAttribute("parts", partService.findAll());
+            List<Part>availParts=new ArrayList<>();
+            for(Part p: partService.findAll()){
+                if(!product2.getParts().contains(p))availParts.add(p);
+            }
+            theModel.addAttribute("availparts",availParts);
+            theModel.addAttribute("assparts",product2.getParts());
+            return "productForm";
+        }
         else {
             ProductService repo = context.getBean(ProductServiceImpl.class);
             PartService partService1 = context.getBean(PartServiceImpl.class);
-            Product existingProduct = repo.findAll().stream().filter(existing->existing.getName().equals(product.getName()))
-                    .findFirst()
-                    .orElse(null);
 
-            if (existingProduct != null) {
-                Product multiPackProduct = new Product();
-                multiPackProduct.setName(product.getName() + " mulit-pack");
-                multiPackProduct.setPrice(existingProduct.getPrice() * product.getInv());
-                multiPackProduct.setInv(product.getInv());
+            if (product.getId() != 0) {
+                Product existingProduct = repo.findById((int) product.getId());
+                existingProduct.setName(product.getName());
+                existingProduct.setPrice(product.getPrice());
+                existingProduct.setInv(product.getInv());
+                existingProduct.setParts(product.getParts());
 
-                multiPackProduct.setParts(new HashSet<>(existingProduct.getParts()));
+                if (product.getInv() - existingProduct.getInv() > 0) {
+                    for (Part p : existingProduct.getParts()) {
+                        int inv = p.getInv();
+                        p.setInv(inv - (product.getInv() - existingProduct.getInv()));
+                        partService1.save(p);
+                    }
+                }
+                repo.save(existingProduct);
+                return "confirmationaddproduct";
+            }
+            else {
+                Product existingProduct = repo.findAll().stream().filter(existing -> existing.getName().equals(product.getName()))
+                        .findFirst()
+                        .orElse(null);
 
-                repo.save(multiPackProduct);
+                if (existingProduct != null) {
+                    Product multiPackProduct = new Product();
+                    multiPackProduct.setName(product.getName() + " mulit-pack");
+                    multiPackProduct.setPrice(existingProduct.getPrice() * product.getInv());
+                    multiPackProduct.setInv(product.getInv());
+                    multiPackProduct.setParts(new HashSet<>(existingProduct.getParts()));
+                    repo.save(multiPackProduct);
+                    return "confirmationaddproduct";
+
+                } else {
+                    repo.save(product);
+                }
                 return "confirmationaddproduct";
             }
 
@@ -213,7 +257,7 @@ Change file: OutsourcedPartController lines 40 - 65. The OutsourcedPartControlle
             }
         }
 
-Change file: InhousePartForm lines 7, 10 - 11, 34 - 35. Updated CSS to match throughout.
+Change file: InhousePartForm lines 7 - 11, 35 - 36. Updated CSS to match throughout.
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
         link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -221,7 +265,7 @@ Change file: InhousePartForm lines 7, 10 - 11, 34 - 35. Updated CSS to match thr
         <a href="http://localhost:8080/" class="btn btn-primary btn-sm mb-3">Link
         to Main Screen</a>
 
-Change file: OutsourcedPartForm lines 7, 10 - 11, 33 - 34. Updated CSS to match throughout.
+Change file: OutsourcedPartForm lines 7 - 11, 34 - 35. Updated CSS to match throughout.
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
         link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -229,7 +273,7 @@ Change file: OutsourcedPartForm lines 7, 10 - 11, 33 - 34. Updated CSS to match 
         <a href="http://localhost:8080/" class="btn btn-primary btn-sm mb-3">Link
         to Main Screen</a>
 
-Change file: productForm lines 8 - 9, 76. Updated CSS to match throughout.
+Change file: productForm lines 8 - 9, 77. Updated CSS to match throughout.
 
         link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"
@@ -242,6 +286,73 @@ Change file: productForm lines 8 - 9, 76. Updated CSS to match throughout.
 •  The button should decrement the inventory of that product by one. It should not affect the inventory of any of the associated parts.
 •  Display a message that indicates the success or failure of a purchase.
 
+Created file: buynow.html lines 1 - 21. This file creates the page after a successful purchase.
+
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Successful Purchase</title>
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+                integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        </head>
+        <body>
+        <div class="container">
+        <h1>CJ's Skateboard Shop</h1>
+          <div class="container">
+            <a class="btn btn-primary mt-3" href="http://localhost:8080">Return Home</a>
+          </div>
+        <hr>
+        <p>Thank you for shopping with us! Order details will be sent shortly!</p>
+        </div>
+        
+        </body>
+        </html>
+
+Created file: unsuccessfulbuynow.html lines 1 - 20. This file creates the page after an unsuccessful purchase.
+
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Unsuccessful Purchase</title>
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+                integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        </head>
+        <body>
+        <div class="container">
+        <h1>CJ's Skateboard Shop</h1>
+        <hr>
+        <p>This item is out-of-stock. Please try again later.</p>
+        
+        <a href="http://localhost:8080/" class="btn btn-primary btn-sm mb-3">Link
+        to Main Screen</a>
+        </div>
+        </body>
+        </html>
+
+Changed file: mainscreen.html lines 85. Added the button next to the update and delete buttons. This button calls the buyNow method.
+
+        <td><a th:href="@{/buyNow(productID=${tempProduct.id})}" class="btn btn-primary btn-sm mb-3">Buy Now</a>
+
+Changed file: AddProductController lines 196 - 209. This added the buyNow method that decrements the inventory by 1 when the user clicks the "Buy Now" button of a specific product.
+
+        @GetMapping("/buyNow")
+        public String buyNow(@RequestParam("productID") int theID, Model theModel) {
+            ProductService repo = context.getBean(ProductServiceImpl.class);
+            Product product3=repo.findById(theID);
+            if (product3 != null && product3.getInv() > 0) {
+                int inv = product3.getInv();
+                product3.setInv(inv - 1);
+                repo.save(product3);
+                return "buynow";
+            }
+            else {
+                return "unsuccessfulbuynow";
+            }
+        }
 
 ## G.  Modify the parts to track maximum and minimum inventory by doing the following:
 •  Add additional fields to the part entity for maximum and minimum inventory.

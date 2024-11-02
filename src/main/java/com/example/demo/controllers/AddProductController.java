@@ -70,42 +70,46 @@ public class AddProductController {
             theModel.addAttribute("assparts",product2.getParts());
             return "productForm";
         }
- //       theModel.addAttribute("assparts", assparts);
- //       this.product=product;
-//        product.getParts().addAll(assparts);
         else {
             ProductService repo = context.getBean(ProductServiceImpl.class);
             PartService partService1 = context.getBean(PartServiceImpl.class);
-            Product existingProduct = repo.findAll().stream().filter(existing->existing.getName().equals(product.getName()))
-                    .findFirst()
-                    .orElse(null);
 
-            if (existingProduct != null) {
-                Product multiPackProduct = new Product();
-                multiPackProduct.setName(product.getName() + " mulit-pack");
-                multiPackProduct.setPrice(existingProduct.getPrice() * product.getInv());
-                multiPackProduct.setInv(product.getInv());
+            if (product.getId() != 0) {
+                Product existingProduct = repo.findById((int) product.getId());
+                existingProduct.setName(product.getName());
+                existingProduct.setPrice(product.getPrice());
+                existingProduct.setInv(product.getInv());
+                existingProduct.setParts(product.getParts());
 
-                multiPackProduct.setParts(new HashSet<>(existingProduct.getParts()));
-
-                repo.save(multiPackProduct);
-                return "confirmationaddproduct";
-            }
-            if(product.getId()!=0) {
-                Product product2 = repo.findById((int) product.getId());
-                if(product.getInv()- product2.getInv()>0) {
-                    for (Part p : product2.getParts()) {
+                if (product.getInv() - existingProduct.getInv() > 0) {
+                    for (Part p : existingProduct.getParts()) {
                         int inv = p.getInv();
-                        p.setInv(inv - (product.getInv() - product2.getInv()));
+                        p.setInv(inv - (product.getInv() - existingProduct.getInv()));
                         partService1.save(p);
                     }
                 }
+                repo.save(existingProduct);
+                return "confirmationaddproduct";
             }
-            else{
-                product.setInv(0);
+            else {
+                Product existingProduct = repo.findAll().stream().filter(existing -> existing.getName().equals(product.getName()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (existingProduct != null) {
+                    Product multiPackProduct = new Product();
+                    multiPackProduct.setName(product.getName() + " mulit-pack");
+                    multiPackProduct.setPrice(existingProduct.getPrice() * product.getInv());
+                    multiPackProduct.setInv(product.getInv());
+                    multiPackProduct.setParts(new HashSet<>(existingProduct.getParts()));
+                    repo.save(multiPackProduct);
+                    return "confirmationaddproduct";
+
+                } else {
+                    repo.save(product);
+                }
+                return "confirmationaddproduct";
             }
-            repo.save(product);
-            return "confirmationaddproduct";
         }
     }
 
@@ -188,5 +192,19 @@ public class AddProductController {
         }
         theModel.addAttribute("availparts",availParts);
         return "productForm";
+    }
+    @GetMapping("/buyNow")
+    public String buyNow(@RequestParam("productID") int theID, Model theModel) {
+        ProductService repo = context.getBean(ProductServiceImpl.class);
+        Product product3=repo.findById(theID);
+        if (product3 != null && product3.getInv() > 0) {
+            int inv = product3.getInv();
+            product3.setInv(inv - 1);
+            repo.save(product3);
+            return "buynow";
+        }
+        else {
+            return "unsuccessfulbuynow";
+        }
     }
 }
