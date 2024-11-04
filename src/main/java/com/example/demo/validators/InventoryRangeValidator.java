@@ -20,6 +20,10 @@ public class InventoryRangeValidator implements ConstraintValidator<ValidInvento
     public boolean isValid(Part part, ConstraintValidatorContext context ) {
         boolean isValid = true;
 
+        if(part.getInv() == null || part.getMinInv() == null || part.getMaxInv() == null) {
+            return true;
+        }
+
         if (part.getInv() < part.getMinInv()) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("Inventory cannot be lower than the minimum inventory.")

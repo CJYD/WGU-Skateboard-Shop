@@ -47,17 +47,18 @@ public class AddOutsourcedPartController {
             OutsourcedPart op = repo.findAll().stream().filter(existing -> existing.getName().equals(part.getName()))
                     .findFirst().orElse(null);
 
-            if (op != null && op.getName().equals(part.getName())) {
+            if (op != null) {
                 OutsourcedPart multiPackPart = new OutsourcedPart();
                 multiPackPart.setName(op.getName() + " multi-pack");
                 multiPackPart.setPrice(op.getPrice() * part.getInv());
                 multiPackPart.setInv(part.getInv());
+                multiPackPart.setMinInv(part.getMinInv());
+                multiPackPart.setMaxInv(part.getMaxInv());
                 multiPackPart.setCompanyName(op.getCompanyName());
 
                 repo.save(multiPackPart);
                 return "confirmationaddpart";
             } else {
-                if (op != null) part.setProducts(op.getProducts());
                 repo.save(part);
                 return "confirmationaddpart";
             }

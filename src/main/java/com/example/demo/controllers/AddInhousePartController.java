@@ -46,19 +46,30 @@ public class AddInhousePartController{
             InhousePart ip = repo.findAll().stream().filter(existing->existing.getName().equals(part.getName()))
                     .findFirst().orElse(null);
 
-            if (ip != null && ip.getName().equals(part.getName())) {
+            if (ip != null && ip.getPartId() == part.getPartId()) {
+                ip.setName(part.getName());
+                ip.setPrice(part.getPrice());
+                ip.setInv(part.getInv());
+                ip.setMinInv(part.getMinInv());
+                ip.setMaxInv(part.getMaxInv());
+                ip.setPartId(part.getPartId());
+                repo.save(ip);
+                return "confirmationaddpart";
+
+            }
+            else if (ip != null) {
                 InhousePart multiPackPart = new InhousePart();
                 multiPackPart.setName(ip.getName() + " multi-pack");
                 multiPackPart.setPrice(ip.getPrice() * part.getInv());
                 multiPackPart.setInv(part.getInv());
+                multiPackPart.setMinInv(part.getMinInv());
+                multiPackPart.setMaxInv(part.getMaxInv());
                 multiPackPart.setPartId(ip.getPartId());
-
                 repo.save(multiPackPart);
                 return "confirmationaddpart";
-            } else {
-                if (ip != null) part.setProducts(ip.getProducts());
+            }
+            else {
                 repo.save(part);
-
                 return "confirmationaddpart";
             }
         }
